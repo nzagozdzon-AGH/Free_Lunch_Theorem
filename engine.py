@@ -72,7 +72,7 @@ def monte_carlo(offer: dict, overround: float) -> np.ndarray:
     return results
 
 
-def visualize_results(results: np.ndarray, title: str) -> None:
+def visualize_results(results: np.ndarray, title: str, color: str = "#0A2F80CF") -> None:
     """
     Displays histogram to present data from monte carlo simulation.
     """
@@ -83,14 +83,14 @@ def visualize_results(results: np.ndarray, title: str) -> None:
     p_loss = 100-p_win
 
     plt.figure(figsize=(10, 6))
-    plt.hist(results, bins=26, color="#0A2F80CF", edgecolor='black')
+    plt.hist(results, bins=26, color=color, edgecolor='black')
     plt.axvline(0, color="#a80000", linewidth=5, linestyle='--')
     
     y_min, y_max = plt.ylim()
     x_min, x_max = plt.xlim()
     
-    # Tekst po lewej (Strata) - umieszczony w 25% szerokości lewej strony
-    plt.text(x_min * 0.4, y_max * 0.9, 
+
+    plt.text(x_min * 0.5, y_max * 0.9, 
              f"Chance of loss:\n{p_loss:.1f}%", 
              color='#a80000', fontsize=12, fontweight='bold', ha='center')
 
@@ -106,7 +106,6 @@ def visualize_results(results: np.ndarray, title: str) -> None:
     plt.xlabel('Net Result (PLN)', fontsize=12)
     plt.ylabel('Frequency', fontsize=12)
     plt.grid(True, linestyle=':', alpha=0.6)
-    plt.legend()
     
     plt.show()
 

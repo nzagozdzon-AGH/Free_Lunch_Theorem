@@ -77,12 +77,10 @@ def visualize_results(results: np.ndarray, title: str) -> None:
     Displays histogram to present data from monte carlo simulation.
     """
     # Calculating p_win and of loss
-    loss_count = np.sum(results <= 0)
     win_count = np.sum(results > 0)
     total = len(results)
-    p_loss = (loss_count / total) * 100
     p_win = (win_count / total) * 100
-    
+    p_loss = 100-p_win
 
     plt.figure(figsize=(10, 6))
     plt.hist(results, bins=26, color="#0A2F80CF", edgecolor='black')
@@ -92,7 +90,7 @@ def visualize_results(results: np.ndarray, title: str) -> None:
     x_min, x_max = plt.xlim()
     
     # Tekst po lewej (Strata) - umieszczony w 25% szerokości lewej strony
-    plt.text(x_min * 0.7, y_max * 0.9, 
+    plt.text(x_min * 0.4, y_max * 0.9, 
              f"Chance of loss:\n{p_loss:.1f}%", 
              color='#a80000', fontsize=12, fontweight='bold', ha='center')
 
@@ -106,19 +104,22 @@ def visualize_results(results: np.ndarray, title: str) -> None:
 
     plt.title(title, fontsize=14, fontweight='bold')
     plt.xlabel('Net Result (PLN)', fontsize=12)
-    plt.ylabel('Number of simulations', fontsize=12)
+    plt.ylabel('Frequency', fontsize=12)
     plt.grid(True, linestyle=':', alpha=0.6)
     plt.legend()
     
     plt.show()
 
 def confidence_interval(results: np.ndarray) -> str:
-    lower = np.percentile(results, 20)
-    upper = np.percentile(results, 80)
-    return f"60% confidence interval: [{lower:.2f}, {upper:.2f}]"
+    lower = np.percentile(results, 25)
+    upper = np.percentile(results, 75)
+    return f"50% confidence interval: [{lower:.2f}, {upper:.2f}]"
 
 
 def bet_free_bet(free_bet_dict: dict, overround: float, tax: bool) -> float:
+    """
+    Performs simulation of betting a single free bet
+    """
     stake = free_bet_dict["value"]
     odds = free_bet_dict["odds"]
     overround = overround**free_bet_dict["legs"]
@@ -135,3 +136,12 @@ def bet_free_bet(free_bet_dict: dict, overround: float, tax: bool) -> float:
             return stake*odds - stake
     else:
         return 0
+    
+def chance_of_profit(results: np.ndarray) -> float:
+    """
+    It calculates chance of going positive when playing given offer
+    """
+    win_count = np.sum(results > 0)
+    total = len(results)
+    p_win = (win_count / total) * 100
+    return p_win

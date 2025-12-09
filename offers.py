@@ -170,3 +170,25 @@ LV_BET = {
         "free_bet": None
     }
 }
+
+STS = {
+    "Offer_1": {
+        "turnover": 300,
+        "bonus": 100,
+        "deposit": 100,
+        "legs": 2,
+        "min_odds": 1.91,
+        "tax": True,
+        "free_bet": None
+    },
+    "Offer_2_and_3": {
+        "turnover": 1200,
+        "bonus": 300,
+        "deposit": 600,
+        "legs": 2,
+        "min_odds": 1.91,
+        "tax": True,
+        "free_bet": None
+        }
+}
+

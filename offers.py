@@ -67,3 +67,48 @@ Etoto = {
             "legs": 1
         }
     }
+
+Lebull = {
+    "Offer_1": {
+        "turnover": 600,
+        "bonus": 200,
+        "deposit": 200,
+        "legs": 1,
+        "min_odds": 1.95,
+        "tax": True,
+        "free_bet": {
+            "value": 20,
+            "odds": 3.5, # it's SNR, so I recommend playing with bigger odds
+            "SR": False,
+            "legs": 1
+        }
+    },
+    "Offer_2": {
+        "turnover": 1800,
+        "bonus": 300,
+        "deposit": 600,
+        "legs": 1,
+        "min_odds": 1.95,
+        "tax": True,
+        "free_bet": {
+            "value": 20,
+            "odds": 3.5, # it's SNR, so I recommend playing with bigger odds
+            "SR": False,
+            "legs": 1
+        }
+    },
+    "Offer_3": {
+        "turnover": 2400,
+        "bonus": 400,
+        "deposit": 800,
+        "legs": 1,
+        "min_odds": 1.95,
+        "tax": True,
+        "free_bet": {
+            "value": 10,
+            "odds": 3.5, # it's SNR, so I recommend playing with bigger odds
+            "SR": False,
+            "legs": 1
+        }
+    }
+}

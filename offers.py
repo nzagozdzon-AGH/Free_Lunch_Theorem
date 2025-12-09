@@ -112,3 +112,61 @@ Lebull = {
         }
     }
 }
+
+LV_BET = {
+    "Offer_1": {
+        "turnover": 4030,
+        "bonus": 500,
+        "deposit": 500,
+        "legs": 1,
+        "min_odds": 1.75,
+        "tax": True,
+        "free_bet": {
+            "value": 30,
+            "odds": 3.5, # it's SNR, so I recommend playing with bigger odds
+            "SR": False,
+            "legs": 3
+        }
+    },
+    "Offer_1_alt": {
+    "turnover": 7230,
+    "bonus": 600,
+    "deposit": 600,
+    "legs": 1,
+    "min_odds": 1.5,
+    "tax": True,
+    "free_bet": {
+        "value": 30,
+        "odds": 2.5,
+        "SR": True,
+        "legs": 3
+        }
+    },
+    "Offer_2": {
+        "turnover": 5400,
+        "bonus": 600,
+        "deposit": 1200,
+        "legs": 1,
+        "min_odds": 1.75,
+        "tax": True,
+        "free_bet": None
+    },
+    "Offer_3": {
+        "turnover": 7800,
+        "bonus": 900,
+        "deposit": 3000,
+        "legs": 1,
+        "min_odds": 1.75,
+        "tax": True,
+        "free_bet": None
+    },
+    "Offer_4": {
+        "turnover": 4500,
+        "bonus": 500,
+        "deposit": 1000,
+        "legs": 1,
+        "min_odds": 1.75,
+        "tax": True,
+        "free_bet": None
+    }
+}

@@ -53,6 +53,32 @@ Betfan = {
         }
     }
 
+Betters = {
+    "Offer_1": {
+        "turnover": 500,
+        "bonus": 100,
+        "deposit": 100,
+        "legs": 1,
+        "min_odds": 2.1,
+        "tax": True,
+        "free_bet": {
+            "value": 10,
+            "odds": 3.5, # it's SNR, so I recommend playing with bigger odds
+            "SR": False,
+            "legs": 1
+        }
+    },
+    "Offer_2": {
+        "turnover": 1600,
+        "bonus": 200,
+        "deposit": 400,
+        "legs": 1,
+        "min_odds": 2.1,
+        "tax": True,
+        "free_bet": None
+    }
+}
+
 Etoto = {
         "turnover": 2100,
         "bonus": 700,

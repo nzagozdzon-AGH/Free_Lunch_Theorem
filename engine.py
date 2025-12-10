@@ -26,7 +26,7 @@ def one_bet(odds: float, stake: float, overround: float, legs: int, tax: bool) -
     Simulates one bet and returns winnings if won.
     """
     overround = overround**legs
-    p_win = 1/odds/overround
+    p_win = 1/(odds*overround)
 
     if random.random() < p_win:
         if tax:

@@ -1,7 +1,67 @@
 # Imports
 import random
 import numpy as np
+import math
 import matplotlib.pyplot as plt
+
+def monte_carlo(offer: dict, overround: float, stake: int = 10, odds: float = None) -> np.ndarray:
+    """
+    Performs Monte carlo simulation, but it's really qucik.
+    """
+    if odds is None:
+        odds = offer["min_odds"] + 0.15 
+    legs = offer["legs"]
+    money = offer["bonus"] + offer["deposit"]
+    req_turnover = offer["turnover"]
+    tax = offer["tax"]
+    freebet = offer["free_bet"]
+    number_of_simulations = 10000
+    p_win_regular_bet = 1/(odds*overround**legs)
+    needed_bets = math.ceil(req_turnover/stake)
+
+
+    random_values = np.random.random(size=(number_of_simulations, needed_bets))
+    won_bets = random_values < p_win_regular_bet
+    won_bets = won_bets.astype(float)
+
+    if freebet is not None:
+        p_win_freebet = 1/(freebet["odds"]*overround**freebet["legs"])
+        freebet_random_values = np.random.random(size=(number_of_simulations))
+        won_freebets = freebet_random_values < p_win_freebet
+        won_freebets = won_freebets.astype(float)
+    else:
+        won_freebets = 0
+
+    if tax:
+        won_bets *= stake*0.88*odds
+
+        if freebet is not None:
+            if freebet["SR"]:
+                won_freebets *= freebet["value"]*freebet["odds"]*0.88
+            else:
+                winnings = freebet["value"]*freebet["odds"]*0.88 - freebet["value"]
+                won_freebets *= winnings
+    else:
+        won_bets *= stake*odds
+
+        if freebet is not None:
+            if freebet["SR"]:
+                won_freebets *= freebet["value"]*freebet["odds"]
+            else:
+                winnings = freebet["value"]*freebet["odds"] - freebet["value"]
+                won_freebets *= winnings
+
+    won_bets -= stake
+
+    # Tracks history of balance
+    history = np.cumsum(won_bets, axis=1) + money
+    fails = history < 0
+    fails = np.any(fails, axis=1)
+    results = history[:,-1] + won_freebets - offer["deposit"] 
+    results[fails] = -1*money
+
+    return results
+
 
 def overround_calculator(list_of_odds: list) -> int:
     """
@@ -20,56 +80,6 @@ def overround_calculator(list_of_odds: list) -> int:
         avg_overround += overround
     avg_overround /= len(list_of_odds)
     return avg_overround
-
-def one_bet(odds: float, stake: float, overround: float, legs: int, tax: bool) -> float:
-    """
-    Simulates one bet and returns winnings if won.
-    """
-    overround = overround**legs
-    p_win = 1/(odds*overround)
-
-    if random.random() < p_win:
-        if tax:
-            return stake*0.88*odds # adjusted for tax
-        else:
-            return stake*odds
-    else:
-        return 0
-    
-def many_bets(odds: float, stake: float, overround: float, legs: int, tax: bool, money: int, req_turnover: int, free_bet: dict | None) -> float:
-    """
-    Simulates turnover of the bonus
-    """
-    turnover = 0
-    if free_bet is not None:
-        money += bet_free_bet(free_bet, overround, tax)
-    while turnover < req_turnover:
-        money -= stake
-        turnover += stake
-        money += one_bet(odds, stake, overround, legs, tax)
-        if money <= 0:
-            break
-    return money
-
-def monte_carlo(offer: dict, overround: float) -> np.ndarray:
-    """
-    Performs Monte Carlo simulation of given betting strategy
-    """
-    odds = offer["min_odds"] + 0.15 # I add a small value, cause it's hard to find offer with exatcly minimal odds
-    stake = 10 # For any offer I reccomend betting 10 PLN in each bet for diversification
-    legs = offer["legs"]
-    money = offer["bonus"] + offer["deposit"]
-    req_turnover = offer["turnover"]
-    tax = offer["tax"]
-    free_bet = offer["free_bet"]
-
-    results = []
-    tries = 10000
-    while tries > 0:
-        tries -= 1
-        results.append(many_bets(odds, stake, overround, legs, tax, money, req_turnover, free_bet))
-    results = np.array(results) - offer["deposit"]
-    return results
 
 
 def visualize_results(results: np.ndarray, title: str, color: str = "#0A2F80CF") -> None:
@@ -108,6 +118,7 @@ def visualize_results(results: np.ndarray, title: str, color: str = "#0A2F80CF")
     plt.grid(True, linestyle=':', alpha=0.6)
     
     plt.show()
+
 
 def confidence_interval(results: np.ndarray) -> str:
     lower = np.percentile(results, 25)

@@ -147,6 +147,7 @@ def bet_free_bet(free_bet_dict: dict, overround: float, tax: bool) -> float:
     else:
         return 0
     
+
 def chance_of_profit(results: np.ndarray) -> float:
     """
     It calculates chance of going positive when playing given offer
@@ -155,3 +156,9 @@ def chance_of_profit(results: np.ndarray) -> float:
     total = len(results)
     p_win = (win_count / total) * 100
     return p_win
+
+
+def widget(offer: dict, overround: float, title: str, stake: int = 10, odds: float = None, color: str = "#0A2F80CF") -> None:
+    overround = overround/100 + 1
+    results = monte_carlo(offer, overround, stake, odds)
+    visualize_results(results, title, color)  

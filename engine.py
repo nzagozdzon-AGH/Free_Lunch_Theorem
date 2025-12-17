@@ -3,6 +3,9 @@ import random
 import numpy as np
 import math
 import matplotlib.pyplot as plt
+import ipywidgets as ipw
+import offers
+from IPython.display import display
 
 def monte_carlo(offer: dict, overround: float, stake: int = 10, odds: float = None) -> np.ndarray:
     """
@@ -60,7 +63,7 @@ def monte_carlo(offer: dict, overround: float, stake: int = 10, odds: float = No
     results = history[:,-1] + won_freebets - offer["deposit"] 
     results[fails] = -1*money
 
-    return results
+    return results, p_win_regular_bet
 
 
 def overround_calculator(list_of_odds: list) -> int:
@@ -109,9 +112,8 @@ def visualize_results(results: np.ndarray, title: str, color: str = "#0A2F80CF")
     
     plt.text(text_pos_x, y_max * 0.9, 
              f"Chance of profit:\n{p_win:.1f}%", 
-             color='#27ae60', fontsize=12, fontweight='bold', ha='center')
-
-
+             color='#27ae60', fontsize=12, fontweight='bold', ha='center')    
+    
     plt.title(title, fontsize=14, fontweight='bold')
     plt.xlabel('Net Result (PLN)', fontsize=12)
     plt.ylabel('Frequency', fontsize=12)
@@ -158,7 +160,67 @@ def chance_of_profit(results: np.ndarray) -> float:
     return p_win
 
 
-def widget(offer: dict, overround: float, title: str, stake: int = 10, odds: float = None, color: str = "#0A2F80CF") -> None:
+def interact(widgets_dict: dict, offer: dict, overround: float, title: str, stake: int = 10, odds: float = None, color: str = "#0A2F80CF") -> None:
+    """
+    Performs new Monte Carlo simulation from given data and actualizes values in widgets_dict.
+    """
     overround = overround/100 + 1
-    results = monte_carlo(offer, overround, stake, odds)
-    visualize_results(results, title, color)  
+    results, p_win_bet = monte_carlo(offer, overround, stake, odds)
+
+    EV = round(np.mean(results), 2)
+    widgets_dict["EV_label"].value = f"<div style = 'font-size: 25px; margin-bottom: 10px'>Excpected Value: <span style='color:{'green' if EV>0 else 'red'}; font-weight: bold;'>{EV} PLN</span></div>"
+    widgets_dict["P_label"].value = f"<div style='font-size: 25px;'>Probabilty of winning a single bet: <span style='font-weight: bold;'>{round(p_win_bet, 2)}%</span></div>"
+
+    with widgets_dict["Output"]:
+        widgets_dict["Output"].clear_output(wait=True)
+        visualize_results(results, title, color)
+
+def widgets(offer: dict, overround: float) -> tuple[ipw.VBox, dict]:
+    """
+    Defines sliders, text, etc. as well as layout of these things.
+    """
+    overround = overround/100 + 1
+    min_odds = min(stage["min_odds"] for stage in offer.values())
+
+    widgets_dict = {
+        "offer_dropdown": ipw.Dropdown(options = offers.Admiralbet, description = "Choose stage of offer"),
+        "overround_slider": ipw.FloatSlider(value = (overround-1)*100, min = 0.0, max = 20.0, step = 0.1, continuous_update = False),
+        "stake_slider": ipw.IntSlider(value = 10, min = 5, max = 100, step = 5, continuous_update = False),
+        "odds_slider": ipw.FloatSlider(value = min_odds + 0.15, min = min_odds, max = 10.0, step = 0.1, continuous_update = False),
+        "EV_label": ipw.HTML(value=f"Excpected Value: -- "), 
+        "P_label": ipw.HTML(value=f"Probabilty of winning a single bet: --"),
+        "Output": ipw.Output()
+    }
+
+    layout = ipw.VBox([ipw.HBox([
+        ipw.VBox([widgets_dict["offer_dropdown"], widgets_dict["overround_slider"], widgets_dict["stake_slider"], widgets_dict["odds_slider"]]),
+            ipw.VBox([widgets_dict["EV_label"], widgets_dict["P_label"]],
+                     layout=ipw.Layout(margin='0 0 0 80px', justify_content='center'))
+        ]),
+        widgets_dict["Output"]
+    ])
+    return layout, widgets_dict
+
+def interactive_visualization(offer: dict, overround: float, title: str, stake: int = 10, odds: float = None, color: str = "#0A2F80CF") -> None:
+    layout, w = widgets(offer, (overround-1)*100)
+
+    def update_dashboard(offer, overround, stake, odds):
+        interact(
+            widgets_dict=w, 
+            offer=offer, 
+            overround=overround, 
+            stake=stake, 
+            odds=odds,
+            title=title,
+            color=color
+        )
+
+    observe = ipw.interactive_output(update_dashboard, {
+        'offer': w['offer_dropdown'],
+        'overround': w['overround_slider'],
+        'stake': w['stake_slider'],
+        'odds': w['odds_slider']
+        })
+    
+    display(layout)
+    

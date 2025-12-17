@@ -7,7 +7,7 @@ import ipywidgets as ipw
 import offers
 from IPython.display import display
 
-def monte_carlo(offer: dict, overround: float, stake: int = 10, odds: float = None) -> np.ndarray:
+def monte_carlo(offer: dict, overround: float, stake: int = 10, odds: float = None) -> tuple[np.ndarray, float]:
     """
     Performs Monte carlo simulation, but it's really qucik.
     """
@@ -183,7 +183,7 @@ def widgets(offer: dict, overround: float) -> tuple[ipw.VBox, dict]:
     min_odds = min(stage["min_odds"] for stage in offer.values())
 
     widgets_dict = {
-        "offer_dropdown": ipw.Dropdown(options = offers.Admiralbet, description = "Choose stage of offer"),
+        "offer_dropdown": ipw.Dropdown(options = offer, description = "Choose stage of offer"),
         "overround_slider": ipw.FloatSlider(value = (overround-1)*100, min = 0.0, max = 20.0, step = 0.1, continuous_update = False),
         "stake_slider": ipw.IntSlider(value = 10, min = 5, max = 100, step = 5, continuous_update = False),
         "odds_slider": ipw.FloatSlider(value = min_odds + 0.15, min = min_odds, max = 10.0, step = 0.1, continuous_update = False),

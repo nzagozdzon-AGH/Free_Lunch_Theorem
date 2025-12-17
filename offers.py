@@ -39,6 +39,7 @@ Admiralbet = {
 }
 
 Betfan = {
+    "Offer_1": {
         "turnover": 1200,
         "bonus": 600,
         "deposit": 600,
@@ -51,6 +52,7 @@ Betfan = {
             "SR": False,
             "legs": 1
         }
+    }
     }
 
 Betters = {
@@ -80,6 +82,7 @@ Betters = {
 }
 
 Etoto = {
+    "Offer_1": {
         "turnover": 2100,
         "bonus": 700,
         "deposit": 700,
@@ -92,6 +95,7 @@ Etoto = {
             "SR": False,
             "legs": 1
         }
+    }
     }
 
 Lebull = {
